@@ -1,18 +1,23 @@
-import './globals.css'
+import "../styles/globals.css";
+import ProvidersWrapper from "./ProvidersWrapper";
+import Header from "./Header";
+import Footer from "./Footer";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      {/*
-        <head /> will contain the components returned by the nearest parent
-        head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
-      */}
-      <head />
-      <body>{children}</body>
+    <html>
+      <head></head>
+      <body>
+        <ProvidersWrapper>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </ProvidersWrapper>
+      </body>
     </html>
-  )
+  );
 }
