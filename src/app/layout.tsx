@@ -1,7 +1,13 @@
 import "../styles/globals.css";
-import ProvidersWrapper from "./ProvidersWrapper";
-import Header from "./Header";
-import Footer from "./Footer";
+import { Inter as FontSans } from "@next/font/google";
+import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/Toast";
+import ProvidersWrapper from "@/components/ProvidersWrapper";
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 export default function RootLayout({
   children,
@@ -9,15 +15,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html>
-      <head></head>
-      <body>
-        <ProvidersWrapper>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </ProvidersWrapper>
-      </body>
+    <html
+      lang="en"
+      className={cn(
+        "bg-white font-sans text-slate-900 antialiased",
+        fontSans.variable
+      )}>
+      <head />
+      <ProvidersWrapper>
+        <body className="min-h-screen">
+          {children}
+          <Toaster position="bottom-right" />
+        </body>
+      </ProvidersWrapper>
     </html>
   );
 }
