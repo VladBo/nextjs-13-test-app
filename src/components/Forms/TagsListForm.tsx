@@ -117,7 +117,26 @@ export function TagsListForm({ tags, className, ...props }: TagsListFormProps) {
                   instanceId="tags"
                   isMulti
                   options={defaultOptions}
-                  className="w-[350px]"
+                  className="w-[350px] border-slate-300 text-sm placeholder:text-slate-400 hover:border-slate-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-neutral-800 focus:ring-offset-1"
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      "input:focus": {
+                        boxShadow: "none",
+                      },
+                      borderColor: state.isFocused ? "border-neutral-300" : "",
+                      "&:hover": {
+                        borderColor: "border-slate-400",
+                      },
+                      boxShadow: state.isFocused
+                        ? "black 0px 0px 0px 1px"
+                        : "none",
+                    }),
+                    input: (provided, state) => ({
+                      ...provided,
+                      "--tw-ring-inset": 0,
+                    }),
+                  }}
                 />
               )}
             />
