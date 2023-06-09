@@ -1,29 +1,84 @@
-
 version: 2.1
 
-orbs:
-  node: circleci/node@5.1.0
+parameters:
+  GHA_Actor:
+    type: string
+    default: ""
+  GHA_Action:
+    type: string
+    default: ""
+  GHA_Event:
+    type: string
+    default: ""
+  GHA_Meta:
+    type: string
+    default: ""
 
 jobs:
-  build:
+  preview_deployment:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:16.20
+    environment:
+      VERCEL_ORG_ID: $VERCEL_ORG_ID
+      VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
     steps:
       - checkout
-      - restore_cache:
-          name: Restore yarn package cache
-          key: v1-cache-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "package.json" }}-{{ arch }}
       - run:
-          name: Install dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save yarn package cache
-          paths:
-            - ~/.cache/yarn
-          key: v1-cache-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "package.json" }}-{{ arch }}
+          name: Install Vercel CLI
+          command: npm install --global vercel@latest
+      # - run:
+      #     name: Pull Vercel Environment Information
+      #     command: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+      # - run:
+      #     name: Build Project Artifacts
+      #     command: vercel build --token=$VERCEL_TOKEN
+      # - run:
+      #     name: Deploy Project Artifacts to Vercel
+      #     command: vercel deploy --prebuilt --token=$VERCEL_TOKEN
+
+  production_deployment:
+    docker:
+      - image: cimg/node:16.20
+    environment:
+      VERCEL_ORG_ID: $VERCEL_ORG_ID
+      VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
+    steps:
+      - checkout
       - run:
-          name: Lint
-          command: yarn lint
-      - run:
-          name: Build
-          command: yarn build
+          name: Install Vercel CLI
+          command: npm install --global vercel@latest
+      # - run:
+      #     name: Pull Vercel Environment Information
+      #     command: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+      # - run:
+      #     name: Build Project Artifacts
+      #     command: vercel build --prod --token=$VERCEL_TOKEN
+      # - run:
+      #     name: Deploy Project Artifacts to Vercel
+      #     command: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+  test_job:
+    docker:
+      - image: cimg/node:16.20
+    steps:
+      - run: echo << pipeline.parameters.GHA_Action >>
+      - run: echo << pipeline.parameters.GHA_Event >>
+      - run: echo << pipeline.parameters.GHA_Meta >>
+
+workflows:
+  preview_and_production:
+    when:
+      not: << pipeline.parameters.GHA_Action >>
+    jobs:
+      - preview_deployment:
+          filters:
+            branches:
+              ignore: /main/
+      - production_deployment:
+          filters:
+            branches:
+              only: /main/
+  test_workflow:
+    when: << pipeline.parameters.GHA_Action >>
+    jobs:
+      - test_job
