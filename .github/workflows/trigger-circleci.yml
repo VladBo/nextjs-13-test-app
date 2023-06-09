@@ -10,4 +10,4 @@ jobs:
         with:
           GHA_Meta: "{{ github.sha }}"
         env:
-          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+          CCI_TOKEN: ${{ secrets.CIRCLE_CI_DV_CONTENTFUL_CLI }}
